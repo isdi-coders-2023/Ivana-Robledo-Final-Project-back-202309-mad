@@ -16,7 +16,4 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static('public'));
 
-/* App.use('/users', usersRouter);
- app.use('/recipes', recipesRouter) */
-
 app.use(errorMiddleware);
