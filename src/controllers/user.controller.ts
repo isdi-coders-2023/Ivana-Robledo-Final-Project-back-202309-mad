@@ -1,17 +1,14 @@
-import createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
-import { User, UserLoginData } from '../entities/user';
-import { Repository } from '../repos/repo.js';
+import { User, LoginUser } from '../entities/user';
+/* Import { Repository } from '../repos/repo.js'; */
 import { Auth } from '../services/auth.js';
 /* Import { CloudinaryService } from '../services/media.files.js'; */
 import { HttpError } from '../types/http.error';
 import { Controller } from './controller.js';
 
-const debug = createDebug('PF11:Controller: UserController');
-
 export class UserController extends Controller<User> {
   async login(req: Request, res: Response, next: NextFunction) {
-    const { email, password } = req.body as unknown as UserLoginData;
+    const { email, passwd } = req.body as unknown as LoginUser;
     const error = new HttpError(401, 'Unauthorized', 'Login Unauthorized');
     try {
       if (!this.repo.search) return;
@@ -21,10 +18,10 @@ export class UserController extends Controller<User> {
       }
 
       const user = data[0];
-      if (!(await Auth.compare(password, user.passwd))) {
+      if (!(await Auth.compare(passwd, user.passwd))) {
         throw error;
       }
-  } catch (error) {
+    } catch (error) {
       next(error);
     }
   }
@@ -39,10 +36,10 @@ export class UserController extends Controller<User> {
           'No avatar image for registration'
         );
       }
-        } catch (error) {
+    } catch (error) {
       next(error);
     }
 
     super.create(req, res, next);
   }
-  }}
+}
