@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* /
 import { v2 as cloudinary } from 'cloudinary';
 import createDebug from 'debug';
 import { ImgData } from '../types/img.data';
@@ -8,18 +8,11 @@ const debug = createDebug('W8E:mediaFiles');
 
 export class MediaFiles {
   constructor() {
-    // Alternative cloudinary.config({
-    //   cloud_name: 'dip7gfqzk',
-    //   api_key: '779336367936511',
-    //   api_secret: process.env.CLOUDINARY_SECRET,
-    // });
-
     cloudinary.config({
       secure: true, // Setting return "https" URLs
     });
 
     debug('Instantiated');
-    debug('key:', cloudinary.config().api_key);
   }
 
   async uploadImage(imagePath: string) {
@@ -46,3 +39,4 @@ export class MediaFiles {
     }
   }
 }
+ */

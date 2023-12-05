@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import createDebug from 'debug';
 import { errorMiddleware } from './middleware/error.middleware.js';
-/* Import { usersRouter } from './router/users.router.js'; */
+import { userRouter } from './routers/users.router.js';
 
 const debug = createDebug('W9E:app');
 
@@ -15,5 +15,7 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.static('public'));
+
+app.use('/users', userRouter);
 
 app.use(errorMiddleware);
