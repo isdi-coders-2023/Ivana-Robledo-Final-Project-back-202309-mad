@@ -1,5 +1,5 @@
-/* .import cloudinaryBase from 'cloudinary';
-import { ImgData } from '../types/img.data';
+import cloudinaryBase from 'cloudinary';
+/* Import { ImgData } from '../types/img.data'; */
 import { MediaFiles } from './media.files.js';
 
 jest.mock('cloudinary');
@@ -32,4 +32,3 @@ describe('When it is Instantiated', () => {
     });
   });
 });
- */

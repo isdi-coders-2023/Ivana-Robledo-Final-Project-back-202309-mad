@@ -1,4 +1,3 @@
-/* /
 import { v2 as cloudinary } from 'cloudinary';
 import createDebug from 'debug';
 import { ImgData } from '../types/img.data';
@@ -18,7 +17,9 @@ export class MediaFiles {
   async uploadImage(imagePath: string) {
     try {
       const uploadApiResponse = await cloudinary.uploader.upload(imagePath, {
+        // eslint-disable-next-line camelcase
         use_filename: true,
+        // eslint-disable-next-line camelcase
         unique_filename: false,
         overwrite: true,
       });
@@ -39,4 +40,3 @@ export class MediaFiles {
     }
   }
 }
- */
