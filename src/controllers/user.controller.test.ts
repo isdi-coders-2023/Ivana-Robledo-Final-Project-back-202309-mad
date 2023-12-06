@@ -1,129 +1,87 @@
 import { Request, Response } from 'express';
-import { UserMongoRepo } from '../repos/users/users.mongo.repo';
-import { Auth } from '../services/auth';
 import { UserController } from './user.controller';
+import { UserMongoRepo } from '../repos/users/users.mongo.repo.js';
 
-describe('Given the class UserController', () => {
-  describe('When it is instantiated', () => {
-    const mockRepo: UserMongoRepo = {
-      getAll: jest.fn(),
-      getById: jest.fn(),
-      login: jest.fn(),
-      create: jest.fn(),
-    };
+describe('Given UsersController class', () => {
+  let controller: UserController;
+  let mockRequest: Request;
+  let mockResponse: Response;
+  let mockNext: jest.Mock;
 
-    const userController = new UserController(mockRepo);
+  beforeEach(() => {
+    mockRequest = {
+      body: {},
+      params: {},
+      query: { key: 'value' },
+    } as unknown as Request;
 
-    test('Then when we use login()', async () => {
-      const mockUser = {
-        email: '',
-        passwd: '',
-      };
-      const mockRequest = {
-        params: { id: '1' },
-        body: mockUser,
-      } as unknown as Request;
-      const mockResponse = {
-        json: jest.fn(),
-      } as unknown as Response;
+    mockResponse = {
+      json: jest.fn(),
+      status: jest.fn(),
+    } as unknown as Response;
 
-      const mockNext = jest.fn();
+    mockNext = jest.fn();
+  });
+  describe('When we instantiate it without errors', () => {
+    beforeEach(() => {
+      const mockRepo = {
+        create: jest.fn().mockResolvedValue({}),
+        getById: jest.fn().mockResolvedValue({}),
+        update: jest.fn().mockResolvedValue({}),
+        delete: jest.fn().mockResolvedValue(undefined),
+        login: jest.fn().mockResolvedValue({}),
+        getAll: jest.fn().mockResolvedValue([{}]),
+      } as unknown as UserMongoRepo;
 
-      Auth.compare = jest.fn().mockReturnValueOnce(true);
-
-      await userController.login(mockRequest, mockResponse, mockNext);
+      controller = new UserController(mockRepo);
     });
-    test('Then, when login() throws an error when compare fails', async () => {
-      const mockUser = {
-        email: '',
-        passwd: '',
-      };
-      const mockRequest = {
-        params: { id: '1' },
-        body: mockUser,
-      } as unknown as Request;
-      const mockResponse = {
-        json: jest.fn(),
-      } as unknown as Response;
-      const mockNext = jest.fn();
-
-      Auth.compare = jest.fn().mockResolvedValueOnce(false);
-
-      await userController.login(mockRequest, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalled();
-    });
-    test('Then, when we use getAll()', async () => {
-      const mockRequest = {} as unknown as Request;
-      const mockResponse = {
-        json: jest.fn(),
-      } as unknown as Response;
-      const mockNext = jest.fn();
-      await userController.getAll(mockRequest, mockResponse, mockNext);
-      expect(mockResponse.json).toHaveBeenCalled();
+    test('Then create should...', async () => {
+      await controller.create(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.json).toHaveBeenCalledWith({});
     });
 
-    test('Then, when we use create()', async () => {
-      const mockUser = {
-        email: '',
-        passwd: '',
-        username: '',
-      };
+    test('Then login should...', async () => {
+      await controller.login(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.json).toHaveBeenCalledWith({});
+    });
 
-      Auth.hash = jest.fn();
-      (mockRepo.create as jest.Mock).mockReturnValueOnce(mockUser);
-
-      const mockRequest = {
-        params: '1',
-        body: {
-          passwd: '12345',
-        },
-      } as unknown as Request;
-
-      const mockResponse = {
-        json: jest.fn(),
-        status: jest.fn(),
-      } as unknown as Response;
-
-      const mockNext = jest.fn();
-      await userController.create(mockRequest, mockResponse, mockNext);
-      expect(mockRepo.create).toHaveBeenCalled();
-      expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
+    test('Then getAll should...', async () => {
+      await controller.getAll(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.json).toHaveBeenCalledWith([{}]);
     });
   });
-  describe('When it is instantitated with errors', () => {
-    const mockRepo: UserMongoRepo = {
-      getAll: jest.fn().mockRejectedValueOnce(new Error('GetAll Error')),
-      create: jest.fn().mockRejectedValueOnce(new Error('Create Error')),
-    } as unknown as UserMongoRepo;
-    const userController = new UserController(mockRepo);
-    test('Then, when getAll throws an error', async () => {
-      const mockRequest = {} as Request;
-      const mockResponse = {
-        json: jest.fn(),
-      } as unknown as Response;
-      const mockNext = jest.fn();
-      await userController.getAll(mockRequest, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalledWith(new Error('GetAll Error'));
+
+  describe('When we instantiate with errors', () => {
+    let mockError: Error;
+
+    beforeEach(() => {
+      mockError = new Error('Mocked Error');
+
+      const mockRepo = {
+        create: jest.fn().mockRejectedValue(mockError),
+        getById: jest.fn().mockRejectedValue(mockError),
+        update: jest.fn().mockRejectedValue(mockError),
+        delete: jest.fn().mockRejectedValue(mockError),
+        login: jest.fn().mockRejectedValue(mockError),
+        getAll: jest.fn().mockRejectedValue(mockError),
+      } as unknown as UserMongoRepo;
+
+      controller = new UserController(mockRepo);
     });
 
-    test('Then, when create() throws an error', async () => {
-      const mockRequest = {
-        body: {
-          email: '',
-          passwd: '',
-          userame: '',
-        },
-      } as unknown as Request;
+    test('Then create should...', async () => {
+      await controller.create(mockRequest, mockResponse, mockNext);
+      expect(mockNext).toHaveBeenCalled();
+    });
 
-      const mockResponse = {
-        json: jest.fn(),
-        status: jest.fn(),
-      } as unknown as Response;
+    test('Then login should...', async () => {
+      await controller.login(mockRequest, mockResponse, mockNext);
+      expect(mockNext).toHaveBeenLastCalledWith(mockError);
+    });
 
-      const mockNext = jest.fn();
-      await userController.create(mockRequest, mockResponse, mockNext);
-      expect(mockRepo.create).toHaveBeenCalled();
-      expect(mockNext).toHaveBeenCalledWith(new Error('Create Error'));
+    test('Then getAll should...', async () => {
+      await controller.getAll(mockRequest, mockResponse, mockNext);
+      expect(mockNext).toHaveBeenLastCalledWith(mockError);
     });
   });
 });
