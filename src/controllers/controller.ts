@@ -17,9 +17,10 @@ export abstract class Controller<T extends { id: unknown }> {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const finalItem = await this.repo.create(req.body);
+      const result = await this.repo.create(req.body);
       res.status(201);
-      res.json(finalItem);
+      res.statusMessage = 'Created';
+      res.json(result);
     } catch (error) {
       next(error);
     }

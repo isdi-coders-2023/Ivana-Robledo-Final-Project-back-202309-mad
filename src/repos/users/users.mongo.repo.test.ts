@@ -1,64 +1,68 @@
-import { User } from '../../entities/user';
-import { Auth } from '../../services/auth';
-import { UserModel } from './users.mongo.model';
 import { UserMongoRepo } from './users.mongo.repo';
+import { UserModel } from './users.mongo.model.js';
+import { LoginUser, User } from '../../entities/user';
+import { Auth } from '../../services/auth.js';
 
-jest.mock('./users.mongo.model');
-jest.mock('../../services/auth');
+jest.mock('./users.mongo.model.js');
+jest.mock('../../services/auth.js');
 
-describe('Given the class UsersMongoRepo', () => {
+describe('Given UsersMongoRepo', () => {
+  Auth.hash = jest.fn();
+  Auth.compare = jest.fn().mockResolvedValue(true);
   let repo: UserMongoRepo;
-  beforeEach(() => {
-    repo = new UserMongoRepo();
-  });
 
-  describe('When it is instantiated', () => {
-    test('Then, when we use the getAll() method', async () => {
-      const mockExec = jest.fn().mockResolvedValueOnce([]);
-      UserModel.find = jest.fn().mockReturnValueOnce({
-        exec: mockExec,
+  describe('When we instantiate it without errors', () => {
+    const exec = jest.fn().mockResolvedValue('Test');
+
+    beforeEach(() => {
+      const mockQueryMethod = jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          exec,
+        }),
+        exec,
       });
+
+      UserModel.find = mockQueryMethod;
+      UserModel.findById = mockQueryMethod;
+      UserModel.findOne = mockQueryMethod;
+      UserModel.findByIdAndUpdate = mockQueryMethod;
+      UserModel.create = jest.fn().mockResolvedValue('Test');
+      repo = new UserMongoRepo();
+    });
+
+    test('Then it should execute getAll', async () => {
       const result = await repo.getAll();
-      expect(mockExec).toHaveBeenCalled();
-      expect(result).toEqual([]);
+      expect(exec).toHaveBeenCalled();
+      expect(result).toBe('Test');
     });
-    test('Then, when we use the create() method', async () => {
-      const mockUser = {
-        username: 'Ivana',
-        passwd: '1234',
-        email: 'lalala@gmail.com',
-        recipes: [],
-      } as unknown as User;
-      UserModel.create = jest.fn().mockReturnValueOnce(mockUser);
-      const result = await repo.create(mockUser);
-      expect(result).toEqual(mockUser);
+
+    test('Then it should execute create', async () => {
+      const result = await repo.create({} as Omit<User, 'id'>);
+      expect(Auth.hash).toHaveBeenCalled();
+      expect(UserModel.create).toHaveBeenCalled();
+      expect(result).toBe('Test');
     });
-  });
-  describe('When login() is called', () => {
-    test('Then it should execute login()', async () => {
-      const result = await repo.login({} as User);
-      expect(result).toBe('Example result value');
+
+    test('Then it should execute login', async () => {
+      const result = await repo.login({ email: '' } as LoginUser);
+      expect(UserModel.findOne).toHaveBeenCalled();
+      expect(result).toBe('Test');
     });
   });
 
-  test('Then, it should return the user for valid credentials', async () => {
-    const mockUser = {
-      email: 'usuario@dominio.com',
-      passwd: 'contraseñaCorrecta',
-    };
-
-    UserModel.findOne = jest.fn().mockResolvedValueOnce(mockUser);
-
-    Auth.compare = jest.fn().mockResolvedValueOnce(true);
-
-    // Crea un objeto LoginUser simulado con credenciales válidas
-    const validLoginUser = {
-      email: 'usuario@dominio.com',
-      passwd: 'contraseñaCorrecta',
-    } as unknown as User;
-
-    // Llama a repo.login con credenciales válidas y espera que devuelva el usuario simulado
-    const result = await repo.login(validLoginUser);
-    expect(result).toEqual(mockUser);
+  describe('When we instantiate it WITH errors', () => {
+    const exec = jest.fn().mockResolvedValue(null);
+    beforeEach(() => {
+      UserModel.findById = jest.fn().mockReturnValue({
+        exec,
+      });
+      UserModel.findOne = jest.fn().mockReturnValue({
+        exec,
+      });
+      repo = new UserMongoRepo();
+    });
+    test('Then login should throw an error', async () => {
+      expect(repo.login({} as User)).rejects.toThrow();
+    });
   });
 });

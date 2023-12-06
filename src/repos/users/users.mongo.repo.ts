@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import { User } from '../../entities/user';
+import { LoginUser, User } from '../../entities/user';
 import { Repository } from '../repo';
 import { UserModel } from './users.mongo.model';
 import { Auth } from '../../services/auth';
@@ -22,8 +22,8 @@ export class UserMongoRepo implements Repository<User> {
     return result;
   }
 
-  async login(loginUser: User): Promise<User> {
-    const result = await UserModel.findOne({ email: loginUser.email });
+  async login(loginUser: LoginUser): Promise<User> {
+    const result = await UserModel.findOne({ email: loginUser.email }).exec();
     if (!result || !(await Auth.compare(loginUser.passwd, result.passwd)))
       throw new HttpError(401, 'Unauthorized');
     return result;
