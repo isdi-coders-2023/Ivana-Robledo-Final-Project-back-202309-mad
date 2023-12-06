@@ -16,7 +16,7 @@ export class UserController extends Controller<User> {
     try {
       const result = await this.repo.login(req.body);
       res.status(204);
-      res.statusMessage = 'Accepted';
+      /* Res.statusMessage = 'Accepted'; */
       res.json(result);
     } catch (error) {
       next(error);

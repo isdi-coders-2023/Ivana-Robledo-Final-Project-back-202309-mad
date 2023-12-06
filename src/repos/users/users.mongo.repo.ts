@@ -16,6 +16,12 @@ export class UserMongoRepo implements Repository<User> {
     return result;
   }
 
+  async getById(id: string): Promise<User> {
+    const result = await UserModel.findById(id).exec();
+    if (!result) throw new HttpError(404, 'Not Found', 'GetByid not possible');
+    return result;
+  }
+
   async create(newItem: Omit<User, 'id'>): Promise<User> {
     newItem.passwd = await Auth.hash(newItem.passwd);
     const result: User = await UserModel.create(newItem);

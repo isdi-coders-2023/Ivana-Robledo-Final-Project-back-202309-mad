@@ -7,6 +7,7 @@ describe('Given the class UserController', () => {
   describe('When it is instantiated', () => {
     const mockRepo: UserMongoRepo = {
       getAll: jest.fn(),
+      getById: jest.fn(),
       login: jest.fn(),
       create: jest.fn(),
     };

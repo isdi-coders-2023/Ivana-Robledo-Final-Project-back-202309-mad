@@ -36,6 +36,14 @@ describe('Given UsersMongoRepo', () => {
       expect(result).toBe('Test');
     });
 
+    test('Then, when data isnt found with the getById() method', () => {
+      const mockExec = jest.fn().mockResolvedValueOnce(null);
+      UserModel.findById = jest.fn().mockReturnValueOnce({
+        exec: mockExec,
+      });
+      expect(repo.getById('')).rejects.toThrow();
+    });
+
     test('Then it should execute create', async () => {
       const result = await repo.create({} as Omit<User, 'id'>);
       expect(Auth.hash).toHaveBeenCalled();
