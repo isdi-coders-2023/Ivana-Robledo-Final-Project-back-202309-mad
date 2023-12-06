@@ -25,7 +25,7 @@ describe('Given Auth abstract class', () => {
       const mockValue = '';
 
       // Act
-      const result = Auth.comparison(mockValue, mockValue);
+      const result = Auth.compare(mockValue, mockValue);
 
       // Assert
       expect(compare).toHaveBeenCalled();
@@ -37,18 +37,17 @@ describe('Given Auth abstract class', () => {
       Auth.signJWT(payload);
       expect(jwt.sign).toHaveBeenCalled();
     });
-    test('When verifyJWTGettingPayload is called', () => {
+    test('When verifyAndGetPayload is called', () => {
       jwt.verify = jest.fn();
       Auth.verifyAndGetPayload('');
       expect(jwt.verify).toHaveBeenCalled();
     });
-    test('When verifyJWTGettingPayload is called and throws and Error', () => {
+    test('When verifyAndGetPayload is called and throws and Error', () => {
       jwt.verify = jest.fn().mockReturnValue('');
       expect(() => Auth.verifyAndGetPayload(''));
     });
   });
   describe('When we use its methods with errors', () => {
-    // Cómo testear un error síncrono
     test('Then verifyAndGetPayload should...', () => {
       jwt.verify = jest.fn().mockReturnValue('');
       expect(() => Auth.verifyAndGetPayload('')).toThrow();

@@ -9,7 +9,7 @@
     "start:dev": "cross-env PORT=2800 DEBUG=W9E* nodemon dist/index.js",
     "build": "tsc -w",
     "test": "jest --watchAll --coverage",
-    "build:prod": "tsc"
+    "test:prod": "jest --watchAll --coverage --watchAll=false --passWithNoTests"
   },
   "keywords": [],
   "author": "Ivana Speziale",
