@@ -48,7 +48,6 @@ describe('Given Auth abstract class', () => {
     });
   });
   describe('When we use its methods with errors', () => {
-    // Cómo testear un error síncrono
     test('Then verifyAndGetPayload should...', () => {
       jwt.verify = jest.fn().mockReturnValue('');
       expect(() => Auth.verifyAndGetPayload('')).toThrow();

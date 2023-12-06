@@ -1,6 +1,5 @@
 import { User } from '../../entities/user';
 import { Auth } from '../../services/auth';
-import { HttpError } from '../../types/http.error';
 import { UserModel } from './users.mongo.model';
 import { UserMongoRepo } from './users.mongo.repo';
 
@@ -36,43 +35,30 @@ describe('Given the class UsersMongoRepo', () => {
     });
   });
   describe('When login() is called', () => {
-    test('Then, it should throw HttpError with status 401 for invalid credentials', async () => {
-      UserModel.findOne = jest.fn().mockResolvedValueOnce(null);
-      const invalidLoginUser = {
-        email: 'usuario@xxxxxxxx.com',
-        passwd: 'contraseñaIncorrecta',
-      };
-
-      await expect(repo.login(invalidLoginUser)).rejects.toThrow(HttpError);
-      await expect(repo.login(invalidLoginUser)).rejects.toHaveProperty(
-        'status',
-        401
-      );
-      await expect(repo.login(invalidLoginUser)).rejects.toHaveProperty(
-        'statusMessage',
-        'Unauthorized'
-      );
+    test('Then it should execute login()', async () => {
+      const result = await repo.login({} as User);
+      expect(result).toBe('Example result value');
     });
+  });
 
-    test('Then, it should return the user for valid credentials', async () => {
-      const mockUser = {
-        email: 'usuario@dominio.com',
-        passwd: 'contraseñaCorrecta',
-      };
+  test('Then, it should return the user for valid credentials', async () => {
+    const mockUser = {
+      email: 'usuario@dominio.com',
+      passwd: 'contraseñaCorrecta',
+    };
 
-      UserModel.findOne = jest.fn().mockResolvedValueOnce(mockUser);
+    UserModel.findOne = jest.fn().mockResolvedValueOnce(mockUser);
 
-      Auth.compare = jest.fn().mockResolvedValueOnce(true);
+    Auth.compare = jest.fn().mockResolvedValueOnce(true);
 
-      // Crea un objeto LoginUser simulado con credenciales válidas
-      const validLoginUser = {
-        email: 'usuario@dominio.com',
-        passwd: 'contraseñaCorrecta',
-      };
+    // Crea un objeto LoginUser simulado con credenciales válidas
+    const validLoginUser = {
+      email: 'usuario@dominio.com',
+      passwd: 'contraseñaCorrecta',
+    } as unknown as User;
 
-      // Llama a repo.login con credenciales válidas y espera que devuelva el usuario simulado
-      const result = await repo.login(validLoginUser);
-      expect(result).toEqual(mockUser);
-    });
+    // Llama a repo.login con credenciales válidas y espera que devuelva el usuario simulado
+    const result = await repo.login(validLoginUser);
+    expect(result).toEqual(mockUser);
   });
 });

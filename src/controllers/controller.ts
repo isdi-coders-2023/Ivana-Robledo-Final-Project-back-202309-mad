@@ -3,7 +3,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Repository } from '../repos/repo';
 
-export abstract class Controller<T extends { id: string | number }> {
+export abstract class Controller<T extends { id: unknown }> {
   constructor(protected repo: Repository<T>) {}
 
   async getAll(req: Request, res: Response, next: NextFunction) {

@@ -16,7 +16,7 @@ describe('Given the class UserController', () => {
     test('Then when we use login()', async () => {
       const mockUser = {
         email: '',
-        password: '',
+        passwd: '',
       };
       const mockRequest = {
         params: { id: '1' },
@@ -32,10 +32,10 @@ describe('Given the class UserController', () => {
 
       await userController.login(mockRequest, mockResponse, mockNext);
     });
-    test('Then, when login() throws an error when comparePass fails', async () => {
+    test('Then, when login() throws an error when compare fails', async () => {
       const mockUser = {
         email: '',
-        password: '',
+        passwd: '',
       };
       const mockRequest = {
         params: { id: '1' },
