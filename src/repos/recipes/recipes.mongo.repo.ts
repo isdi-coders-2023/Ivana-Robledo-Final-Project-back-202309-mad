@@ -4,6 +4,7 @@ import createDebug from 'debug';
 import { recipeModel } from './recipes.mongo.model.js';
 import { HttpError } from '../../types/http.error.js';
 import { UserMongoRepo } from '../users/users.mongo.repo.js';
+import mongoose from 'mongoose';
 
 const debug = createDebug('W9E:recipes:mongo:repo');
 
@@ -57,23 +58,34 @@ export class RecipesMongoRepo implements Repository<Recipe> {
   }
 
   async update(id: string, updatedItem: Partial<Recipe>): Promise<Recipe> {
-    if (id === updatedItem.id) throw new HttpError(406, 'Not Acceptable');
     const result = await recipeModel
       .findByIdAndUpdate(id, updatedItem, {
         new: true,
       })
+      .populate('author', { Recipes: 0 })
       .exec();
 
-    if (!result)
-      throw new HttpError(406, 'Not Found', 'Update was not possible');
-
+    if (!result) throw new HttpError(404, 'Not Found', 'Update not possible');
     return result;
   }
 
   async delete(id: string): Promise<void> {
-    const result = await recipeModel.findByIdAndDelete(id).exec();
+    const result = await recipeModel
+      .findByIdAndDelete(id)
+      .populate('author', {
+        Recipes: 0,
+      })
+      .exec();
+    if (!result) {
+      throw new HttpError(404, 'Not Found', 'Delete not possible');
+    }
 
-    if (!result)
-      throw new HttpError(406, 'Not Found', 'Delete was not possible');
+    const userID = result.author?.id;
+    const user = await this.userRepo.getById(userID);
+    user.recipes = user.recipes.filter((item) => {
+      const itemID = item as unknown as mongoose.mongo.ObjectId;
+      return itemID.toString() !== id;
+    });
+    await this.userRepo.update(userID, user);
   }
 }

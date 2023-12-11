@@ -30,6 +30,7 @@ export class RecipeController extends Controller<Recipe> {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
+    req.body.author = { id: req.body.userId };
     if (req.file) {
       const imgData = await this.cloudinaryService.uploadImage(req.file.path);
 
@@ -37,5 +38,19 @@ export class RecipeController extends Controller<Recipe> {
     }
 
     super.update(req, res, next);
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        throw new HttpError(400, 'Bad Request', 'Invalid ID');
+      }
+
+      await this.repo.delete(id);
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
   }
 }

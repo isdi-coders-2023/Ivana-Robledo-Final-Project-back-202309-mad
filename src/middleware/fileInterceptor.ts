@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
+import crypto from 'crypto';
 
 export class FileInterceptor {
   singleFileStore(fileName = 'file', fileSize = 8_000_000) {
