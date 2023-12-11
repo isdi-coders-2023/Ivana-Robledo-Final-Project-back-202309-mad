@@ -34,4 +34,24 @@ export abstract class Controller<T extends { id: unknown }> {
       next(error);
     }
   }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.repo.update(req.params.id, req.body);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      await this.repo.delete(req.params.id);
+      res.status(204);
+      res.statusMessage = 'No content';
+      res.json({});
+    } catch (error) {
+      next(error);
+    }
+  }
 }
