@@ -37,8 +37,12 @@ export abstract class Controller<T extends { id: unknown }> {
 
   async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.repo.update(req.params.id, req.body);
-      res.json(result);
+      if (this.repo.update) {
+        const result = await this.repo.update(req.params.id, req.body);
+        res.json(result);
+      } else {
+        throw new Error('Update method is not defined');
+      }
     } catch (error) {
       next(error);
     }
@@ -46,10 +50,14 @@ export abstract class Controller<T extends { id: unknown }> {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await this.repo.delete(req.params.id);
-      res.status(204);
-      res.statusMessage = 'No content';
-      res.json({});
+      if (this.repo.delete) {
+        await this.repo.delete(req.params.id);
+        res.status(204);
+        res.statusMessage = 'No content';
+        res.json({});
+      } else {
+        throw new Error('Delete method is not defined');
+      }
     } catch (error) {
       next(error);
     }

@@ -1,4 +1,4 @@
-import { FileInterceptor } from './file.interceptor';
+import { FileInterceptor } from './fileInterceptor';
 
 jest.mock('crypto', () => ({
   randomUUID: jest.fn().mockReturnValue(''),

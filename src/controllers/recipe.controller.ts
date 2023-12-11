@@ -4,12 +4,15 @@ import createDebug from 'debug';
 import { Controller } from './controller.js';
 import { NextFunction, Request, Response } from 'express';
 import { HttpError } from '../types/http.error.js';
+import { MediaFiles } from '../services/media.files.js';
 
 const debug = createDebug('W9E:recipe:controller');
 
 export class RecipeController extends Controller<Recipe> {
+  declare cloudinaryService: MediaFiles;
   constructor(protected repo: RecipesMongoRepo) {
     super(repo);
+    this.cloudinaryService = new MediaFiles();
     debug('Instantiated');
   }
 
@@ -18,11 +21,9 @@ export class RecipeController extends Controller<Recipe> {
       if (!req.file)
         throw new HttpError(406, 'Not Acceptable', 'Multer file is invalid');
 
-      const imgData = await this.cloudinaryService.uploadImageToCloudinary(
-        req.file.path
-      );
+      const imgData = await this.cloudinaryService.uploadImage(req.file.path);
 
-      req.body.Img = imgData;
+      req.body.img = imgData;
       super.create(req, res, next);
     } catch (error) {
       next(error);
@@ -31,9 +32,7 @@ export class RecipeController extends Controller<Recipe> {
 
   async update(req: Request, res: Response, next: NextFunction) {
     if (req.file) {
-      const imgData = await this.cloudinaryService.uploadImageToCloudinary(
-        req.file.path
-      );
+      const imgData = await this.cloudinaryService.uploadImage(req.file.path);
 
       req.body.modelImg = imgData;
     }
