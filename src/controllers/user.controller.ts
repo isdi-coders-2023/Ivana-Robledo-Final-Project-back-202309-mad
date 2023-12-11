@@ -15,20 +15,10 @@ export class UserController extends Controller<User> {
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = req.body.userId
-        ? await this.repo.getById(req.body.userId)
-        : await this.repo.login(req.body);
-      const data = {
-        user: result,
-        token: Auth.signJWT({
-          id: result.id,
-          email: result.email,
-        }),
-      };
-      debug('login controller', data);
-      res.status(202);
+      const result = await this.repo.login(req.body);
+      res.status(204);
       res.statusMessage = 'Accepted';
-      res.json(data);
+      res.json(result);
     } catch (error) {
       next(error);
     }
