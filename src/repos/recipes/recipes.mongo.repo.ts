@@ -3,11 +3,14 @@ import { Repository } from '../repo.js';
 import createDebug from 'debug';
 import { recipeModel } from './recipes.mongo.model.js';
 import { HttpError } from '../../types/http.error.js';
+import { UserMongoRepo } from '../users/users.mongo.repo.js';
 
-const debug = createDebug('AB:recipes:mongo:repo');
+const debug = createDebug('W9E:recipes:mongo:repo');
 
 export class RecipesMongoRepo implements Repository<Recipe> {
+  userRepo: UserMongoRepo;
   constructor() {
+    this.userRepo = new UserMongoRepo();
     debug('Instantiated');
   }
 
@@ -26,10 +29,31 @@ export class RecipesMongoRepo implements Repository<Recipe> {
   }
 
   async create(newItem: Omit<Recipe, 'id'>): Promise<Recipe> {
-    const result = await recipeModel.create(newItem);
-    if (!result)
-      throw new HttpError(404, 'Not Found', 'create method not possible');
-    return result;
+    try {
+      const userID = newItem.author?.id; // Usar el operador opcional para manejar 'undefined'
+      if (!userID) {
+        throw new HttpError(400, 'Bad Request', 'Author ID is missing');
+      }
+
+      const user = await this.userRepo.getById(userID);
+
+      if (!user) {
+        throw new HttpError(404, 'Not Found', 'User not found');
+      }
+
+      const result: Recipe = await recipeModel.create({
+        ...newItem,
+        author: userID,
+      });
+
+      user.recipes.push(result);
+      await this.userRepo.update(userID, user);
+
+      return result;
+    } catch (error) {
+      console.error('Error in create method:', error);
+      throw error;
+    }
   }
 
   async update(id: string, updatedItem: Partial<Recipe>): Promise<Recipe> {

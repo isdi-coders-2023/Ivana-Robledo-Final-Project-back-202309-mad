@@ -18,11 +18,10 @@ export class RecipeController extends Controller<Recipe> {
 
   async create(req: Request, res: Response, next: NextFunction) {
     try {
+      req.body.author = { id: req.body.userId };
       if (!req.file)
         throw new HttpError(406, 'Not Acceptable', 'Multer file is invalid');
-
       const imgData = await this.cloudinaryService.uploadImage(req.file.path);
-
       req.body.img = imgData;
       super.create(req, res, next);
     } catch (error) {
