@@ -4,7 +4,7 @@ import createDebug from 'debug';
 import { recipeModel } from './recipes.mongo.model.js';
 import { HttpError } from '../../types/http.error.js';
 import { UserMongoRepo } from '../users/users.mongo.repo.js';
-import mongoose from 'mongoose';
+import { UserModel } from '../users/users.mongo.model.js';
 
 const debug = createDebug('W9E:recipes:mongo:repo');
 
@@ -23,7 +23,13 @@ export class RecipesMongoRepo implements Repository<Recipe> {
   }
 
   async getById(id: string): Promise<Recipe> {
-    const result = await recipeModel.findById(id).exec();
+    const result = await recipeModel
+      .findById(id)
+      .populate('author', {
+        recipes: 0,
+      })
+      .exec();
+
     if (!result)
       throw new HttpError(404, 'Not Found', 'findById method not possible');
     return result;
@@ -31,7 +37,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
 
   async create(newItem: Omit<Recipe, 'id'>): Promise<Recipe> {
     try {
-      const userID = newItem.author?.id; // Usar el operador opcional para manejar 'undefined'
+      const userID = newItem.author?.id; // Para manejar undefined
       if (!userID) {
         throw new HttpError(400, 'Bad Request', 'Author ID is missing');
       }
@@ -69,7 +75,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
     return result;
   }
 
-  async delete(id: string): Promise<void> {
+  /* Async delete(id: string): Promise<void> {
     const result = await recipeModel
       .findByIdAndDelete(id)
       .populate('author', {
@@ -80,12 +86,25 @@ export class RecipesMongoRepo implements Repository<Recipe> {
       throw new HttpError(404, 'Not Found', 'Delete not possible');
     }
 
-    const userID = result.author?.id;
+    const userID = result.author.id;
     const user = await this.userRepo.getById(userID);
     user.recipes = user.recipes.filter((item) => {
       const itemID = item as unknown as mongoose.mongo.ObjectId;
       return itemID.toString() !== id;
     });
     await this.userRepo.update(userID, user);
+  } */
+
+  async delete(id: string): Promise<void> {
+    const recipeItem = (await recipeModel
+      .findByIdAndDelete(id)
+      .exec()) as unknown as Recipe;
+    if (!recipeItem) {
+      throw new HttpError(404, 'Not Found', 'Delete not possible');
+    }
+
+    await UserModel.findByIdAndUpdate(recipeItem.author, {
+      $pull: { recipes: id },
+    }).exec();
   }
 }

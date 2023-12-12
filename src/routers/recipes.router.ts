@@ -23,13 +23,13 @@ recipeRouter.post(
   recipeController.create.bind(recipeController)
 );
 recipeRouter.patch(
-  '/update/:id',
+  '/:id',
   interceptor.authorization.bind(interceptor),
   fileInterceptor.singleFileStore('img').bind(fileInterceptor),
   recipeController.update.bind(recipeController)
 );
 recipeRouter.delete(
-  '/delete/:id',
+  '/:id',
   interceptor.authorization.bind(interceptor),
   recipeController.delete.bind(recipeController)
 );
