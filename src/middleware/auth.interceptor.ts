@@ -2,6 +2,7 @@ import createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 import { HttpError } from '../types/http.error.js';
 import { Auth } from '../services/auth.js';
+import { UserMongoRepo } from '../repos/users/users.mongo.repo.js';
 
 const debug = createDebug('W9E:auth:interceptor');
 
@@ -17,7 +18,7 @@ export class AuthInterceptor {
         throw new HttpError(401, 'Unauthorized');
       const token = tokenHeader.split(' ')[1];
       const tokenPayload = Auth.verifyAndGetPayload(token);
-      req.body.userId = tokenPayload.id;
+      req.body.userId = tokenPayload.id; // Configurar req.body.userId aquí
       req.body.tokenRole = tokenPayload.role;
       next();
     } catch (error) {
@@ -25,9 +26,9 @@ export class AuthInterceptor {
     }
   }
 
-  /* Async authentication(req: Request, res: Response, next: NextFunction) {
+  async authentication(req: Request, res: Response, next: NextFunction) {
     try {
-      const userID = req.body.id;
+      const userID = req.body.userId; // Utilizar req.body.userId en lugar de req.body.id
       const userToAddID = req.params.id;
       const repoUsers = new UserMongoRepo();
       const user = await repoUsers.getById(userToAddID);
@@ -37,5 +38,5 @@ export class AuthInterceptor {
     } catch (error) {
       next(error);
     }
-  } */
+  }
 }

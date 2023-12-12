@@ -3,7 +3,7 @@ import { User } from './user';
 
 export type Recipe = {
   id: string;
-  name: string;
+  recipeName: string;
   description: string;
   ingredients: string;
   category: 'Mis recetas' | 'Galletas' | 'Tortas';

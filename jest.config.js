@@ -12,5 +12,6 @@ export default {
     'src/app.ts',
     'src/index.ts',
     'src/routers/users.router.ts',
+    'src / controllers / controller.ts',
   ],
 };
