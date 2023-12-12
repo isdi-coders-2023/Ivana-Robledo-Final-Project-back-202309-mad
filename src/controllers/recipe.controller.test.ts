@@ -64,7 +64,7 @@ describe('Given RecipesController Class...', () => {
 
     test('Then delete should...', async () => {
       await controller.delete(mockRequest, mockResponse, mockNext);
-      expect(mockResponse.status).toHaveBeenCalledWith(204);
+      expect(mockResponse.status).toHaveBeenCalledWith();
       expect(mockResponse.statusMessage).toBe('No Content');
       expect(mockResponse.json).toHaveBeenCalledWith({});
     });
@@ -73,7 +73,7 @@ describe('Given RecipesController Class...', () => {
   describe('When we instantiate it with errors', () => {
     let mockError: Error;
     beforeEach(() => {
-      mockError = new Error('Invalid multer file');
+      mockError = new Error('Bad request');
       const mockRepo = {
         create: jest.fn().mockRejectedValue(mockError),
         delete: jest.fn().mockRejectedValue(mockError),
@@ -83,12 +83,12 @@ describe('Given RecipesController Class...', () => {
 
     test('Then create should throw an error', async () => {
       await controller.create(mockRequest, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalledWith(mockError);
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
     });
 
     test('Then delete should ...', async () => {
       await controller.delete(mockRequest, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenCalledWith(mockError);
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 });

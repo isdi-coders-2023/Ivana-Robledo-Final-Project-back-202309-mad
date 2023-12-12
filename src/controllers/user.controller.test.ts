@@ -42,7 +42,10 @@ describe('Given UsersController class', () => {
 
     test('Then login should...', async () => {
       await controller.login(mockRequest, mockResponse, mockNext);
-      expect(mockResponse.json).toHaveBeenCalledWith({});
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        user: {},
+        token: expect.any(String),
+      });
     });
 
     test('Then getAll should...', async () => {
@@ -76,7 +79,7 @@ describe('Given UsersController class', () => {
 
     test('Then login should...', async () => {
       await controller.login(mockRequest, mockResponse, mockNext);
-      expect(mockNext).toHaveBeenLastCalledWith(mockError);
+      expect(mockNext).toHaveBeenCalledWith(mockError);
     });
 
     test('Then getAll should...', async () => {
