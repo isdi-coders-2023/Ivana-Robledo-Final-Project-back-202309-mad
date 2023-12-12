@@ -9,10 +9,10 @@ describe('Given RecipesController Class...', () => {
   let mockNext: NextFunction;
   let mockRepo: jest.Mocked<RecipesMongoRepo>;
 
-  beforeAll(() => {
+  beforeEach(() => {
     mockRequest = {
       body: {},
-      params: {},
+      params: { id: 'test' },
     } as unknown as Request;
 
     mockResponse = {
@@ -40,14 +40,16 @@ describe('Given RecipesController Class...', () => {
           path: 'valid/path/to/image.jpg',
         },
         body: {},
+        params: { id: 'test' },
       } as unknown as Request;
 
       const mockNext = jest.fn();
       const mockRepo = {
         create: jest.fn(),
+        delete: jest.fn(),
       } as unknown as RecipesMongoRepo;
       const controller = new RecipeController(mockRepo);
-      const mockImageData = { url: 'https://example.com/image.jpg' };
+      const mockImageData = 'Test';
       const mockCloudinaryService = {
         uploadImage: jest.fn().mockResolvedValue(mockImageData),
       };
@@ -69,7 +71,8 @@ describe('Given RecipesController Class...', () => {
 
     test('Then delete should...', async () => {
       await controller.delete(mockRequest, mockResponse, mockNext);
-      expect(mockResponse.json).toHaveBeenCalledWith({});
+      expect(mockResponse.status).toHaveBeenCalledWith(204);
+      expect(mockResponse.statusMessage).toBe('No Content');
     });
   });
 
