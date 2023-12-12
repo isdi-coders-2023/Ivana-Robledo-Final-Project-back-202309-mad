@@ -23,22 +23,27 @@ export class RecipeController extends Controller<Recipe> {
         throw new HttpError(406, 'Not Acceptable', ' Invalid multer file');
       const imgData = await this.cloudinaryService.uploadImage(req.file.path);
       req.body.img = imgData;
-      super.create(req, res, next);
+      const result = await this.repo.create(req.body);
+      res.json(result);
     } catch (error) {
       next(error);
     }
   }
 
-  async update(req: Request, res: Response, _next: NextFunction) {
-    req.body.author = req.body.userId;
-    if (req.file) {
-      const imgData = await this.cloudinaryService.uploadImage(req.file.path);
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      req.body.author = req.body.userId;
 
-      req.body.modelImg = imgData;
+      if (req.file) {
+        const imgData = await this.cloudinaryService.uploadImage(req.file.path);
+        req.body.img = imgData;
+      }
+
+      const result = await this.repo.update(req.params.id, req.body);
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-
-    const result = this.repo.update(req.params.id, req.body);
-    res.send(result);
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {

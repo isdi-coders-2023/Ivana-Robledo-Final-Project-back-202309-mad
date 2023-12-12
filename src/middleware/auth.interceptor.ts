@@ -2,6 +2,7 @@ import createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 import { HttpError } from '../types/http.error.js';
 import { Auth } from '../services/auth.js';
+import { UserMongoRepo } from '../repos/users/users.mongo.repo.js';
 
 const debug = createDebug('W9E:auth:interceptor');
 
@@ -25,7 +26,7 @@ export class AuthInterceptor {
     }
   }
 
-  /* Async authentication(req: Request, res: Response, next: NextFunction) {
+  async authentication(req: Request, res: Response, next: NextFunction) {
     try {
       const userID = req.body.id;
       const userToAddID = req.params.id;
@@ -37,5 +38,5 @@ export class AuthInterceptor {
     } catch (error) {
       next(error);
     }
-  } */
+  }
 }
