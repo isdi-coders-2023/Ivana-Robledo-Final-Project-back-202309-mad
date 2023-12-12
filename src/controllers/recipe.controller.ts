@@ -54,7 +54,8 @@ export class RecipeController extends Controller<Recipe> {
       }
 
       await this.repo.delete(id);
-      res.status(204).end();
+      res.status(204);
+      res.statusMessage = 'No Content';
     } catch (error) {
       next(error);
     }

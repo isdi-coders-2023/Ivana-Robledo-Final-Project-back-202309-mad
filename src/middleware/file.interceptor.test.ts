@@ -1,14 +1,28 @@
+import multer from 'multer';
+import { Request, Response } from 'express';
 import { FileInterceptor } from './fileInterceptor';
 
-jest.mock('crypto', () => ({
-  randomUUID: jest.fn().mockReturnValue(''),
-}));
+jest.mock('multer');
 
-describe('Given FileInterceptorClass', () => {
-  const fileInterceptor = new FileInterceptor();
+describe('Given FileInterceptor', () => {
+  const middlewareMock = jest.fn();
+  const single = jest.fn().mockReturnValue(middlewareMock);
 
-  test('it should return a middleware of type function ', () => {
-    const result = fileInterceptor.singleFileStore();
-    expect(typeof result).toBe('function');
+  // Mock de la función diskStorage
+  multer.diskStorage = jest.fn().mockImplementation((options) => {
+    options.filename('', { originalname: 'filename' }, () => {});
+  });
+
+  (multer as unknown as jest.Mock).mockReturnValue({ single });
+
+  describe('When we instantiate it', () => {
+    const interceptor = new FileInterceptor();
+
+    test('Then singleFileStore should be used', () => {
+      interceptor.singleFileStore()({} as Request, {} as Response, jest.fn());
+      expect(multer.diskStorage).toHaveBeenCalled();
+      expect(single).toHaveBeenCalled();
+      expect(middlewareMock).toHaveBeenCalled();
+    });
   });
 });

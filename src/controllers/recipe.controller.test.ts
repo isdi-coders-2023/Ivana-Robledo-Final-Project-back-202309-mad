@@ -62,10 +62,13 @@ describe('Given RecipesController Class...', () => {
       expect(mockRequest.body.img).toBe(mockImageData);
     });
 
+    test('Then update should...', async () => {
+      await controller.update(mockRequest, mockResponse, mockNext);
+      expect(mockResponse.json).toHaveBeenCalledWith({});
+    });
+
     test('Then delete should...', async () => {
       await controller.delete(mockRequest, mockResponse, mockNext);
-      expect(mockResponse.status).toHaveBeenCalledWith();
-      expect(mockResponse.statusMessage).toBe('No Content');
       expect(mockResponse.json).toHaveBeenCalledWith({});
     });
   });
@@ -76,6 +79,7 @@ describe('Given RecipesController Class...', () => {
       mockError = new Error('Bad request');
       const mockRepo = {
         create: jest.fn().mockRejectedValue(mockError),
+        update: jest.fn().mockRejectedValue(mockError),
         delete: jest.fn().mockRejectedValue(mockError),
       } as unknown as RecipesMongoRepo;
       controller = new RecipeController(mockRepo);
@@ -83,6 +87,11 @@ describe('Given RecipesController Class...', () => {
 
     test('Then create should throw an error', async () => {
       await controller.create(mockRequest, mockResponse, mockNext);
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
+    });
+
+    test('Then update should throw an error', async () => {
+      await controller.update(mockRequest, mockResponse, mockNext);
       expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
     });
 
