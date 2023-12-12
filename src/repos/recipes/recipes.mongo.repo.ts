@@ -75,26 +75,6 @@ export class RecipesMongoRepo implements Repository<Recipe> {
     return result;
   }
 
-  /* Async delete(id: string): Promise<void> {
-    const result = await recipeModel
-      .findByIdAndDelete(id)
-      .populate('author', {
-        Recipes: 0,
-      })
-      .exec();
-    if (!result) {
-      throw new HttpError(404, 'Not Found', 'Delete not possible');
-    }
-
-    const userID = result.author.id;
-    const user = await this.userRepo.getById(userID);
-    user.recipes = user.recipes.filter((item) => {
-      const itemID = item as unknown as mongoose.mongo.ObjectId;
-      return itemID.toString() !== id;
-    });
-    await this.userRepo.update(userID, user);
-  } */
-
   async delete(id: string): Promise<void> {
     const recipeItem = (await recipeModel
       .findByIdAndDelete(id)
