@@ -9,9 +9,10 @@ jest.mock('../users/users.mongo.repo.js');
 jest.mock('../users/users.mongo.model.js');
 describe('Given the class RecipeMongoRepo', () => {
   let repo: RecipesMongoRepo;
-  const exec = jest.fn().mockResolvedValue('Test');
+  // Const exec = jest.fn().mockResolvedValue('Test');
 
   describe('When it is instantiated and its methods are called', () => {
+    const exec = jest.fn().mockResolvedValue('Test');
     beforeEach(() => {
       repo = new RecipesMongoRepo();
       recipeModel.find = jest.fn().mockReturnValue({
@@ -38,7 +39,7 @@ describe('Given the class RecipeMongoRepo', () => {
 
       recipeModel.create = jest.fn().mockReturnValue({});
     });
-    /*   Test('Then it should execute getAll', async () => {
+    /* Test('Then it should execute getAll', async () => {
       const result = await repo.getAll();
       expect(exec).toHaveBeenCalled();
       expect(result).toBe('Test');
