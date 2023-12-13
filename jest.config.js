@@ -14,5 +14,7 @@ export default {
     'src/routers/users.router.ts',
     'src/controllers/recipe.controller.ts',
     'src/repos/recipes/recipes.mongo.model.ts',
+    'src/routers/recipes.router.ts',
+    'src/routers/users.router.ts',
   ],
 };

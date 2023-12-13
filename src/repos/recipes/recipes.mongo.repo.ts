@@ -3,7 +3,6 @@ import createDebug from 'debug';
 import { recipeModel } from './recipes.mongo.model.js';
 import { HttpError } from '../../types/http.error.js';
 import { UserMongoRepo } from '../users/users.mongo.repo.js';
-import mongoose from 'mongoose';
 import { Repository } from '../repo.js';
 import { UserModel } from '../users/users.mongo.model.js';
 
