@@ -37,7 +37,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
 
   async create(newItem: Omit<Recipe, 'id'>): Promise<Recipe> {
     try {
-      const userID = newItem.author?.id; // Para manejar undefined
+      const userID = newItem.author.id;
       if (!userID) {
         throw new HttpError(400, 'Bad Request', 'Author ID is missing');
       }
@@ -68,7 +68,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
       .findByIdAndUpdate(id, updatedItem, {
         new: true,
       })
-      .populate('author', { Recipes: 0 })
+      .populate('author', { recipes: 0 })
       .exec();
 
     if (!result) throw new HttpError(404, 'Not Found', 'Update not possible');

@@ -12,6 +12,7 @@ export default {
     'src/app.ts',
     'src/index.ts',
     'src/routers/users.router.ts',
-    'src / controllers / controller.ts',
+    'src/controllers/recipe.controller.ts',
+    'src/repos/recipes/recipes.mongo.model.ts',
   ],
 };
