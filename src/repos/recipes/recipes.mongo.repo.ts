@@ -1,9 +1,10 @@
 import { Recipe } from '../../entities/recipe.js';
-import { Repository } from '../repo.js';
 import createDebug from 'debug';
 import { recipeModel } from './recipes.mongo.model.js';
 import { HttpError } from '../../types/http.error.js';
 import { UserMongoRepo } from '../users/users.mongo.repo.js';
+import mongoose from 'mongoose';
+import { Repository } from '../repo.js';
 import { UserModel } from '../users/users.mongo.model.js';
 
 const debug = createDebug('W9E:recipes:mongo:repo');
@@ -68,7 +69,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
       .findByIdAndUpdate(id, updatedItem, {
         new: true,
       })
-      .populate('author', { recipes: 0 })
+      .populate('author', { Recipes: 0 })
       .exec();
 
     if (!result) throw new HttpError(404, 'Not Found', 'Update not possible');
@@ -76,14 +77,14 @@ export class RecipesMongoRepo implements Repository<Recipe> {
   }
 
   async delete(id: string): Promise<void> {
-    const recipeItem = (await recipeModel
+    const result = (await recipeModel
       .findByIdAndDelete(id)
       .exec()) as unknown as Recipe;
-    if (!recipeItem) {
+    if (!result) {
       throw new HttpError(404, 'Not Found', 'Delete not possible');
     }
 
-    await UserModel.findByIdAndUpdate(recipeItem.author, {
+    await UserModel.findByIdAndUpdate(result.author, {
       $pull: { recipes: id },
     }).exec();
   }

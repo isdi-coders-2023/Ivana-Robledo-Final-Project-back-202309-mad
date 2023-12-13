@@ -48,14 +48,15 @@ export class RecipeController extends Controller<Recipe> {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      if (!id) {
-        throw new HttpError(400, 'Bad Request', 'ID is missing');
+      if (!this.repo) {
+        throw new HttpError(400, 'Bad Request');
       }
 
-      await this.repo.delete(id);
+      await this.repo.delete(req.params.id);
+      // Res.json({});
       res.status(204);
       res.statusMessage = 'No Content';
+      res.send('Deleted');
     } catch (error) {
       next(error);
     }
