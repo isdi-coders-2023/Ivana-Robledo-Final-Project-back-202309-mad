@@ -18,7 +18,7 @@ export class UserMongoRepo implements Repository<User> {
 
   async getById(id: string): Promise<User> {
     const result = await UserModel.findById(id).exec();
-    if (!result) throw new HttpError(404, 'Not Found', 'GetByid not possible');
+    if (!result) throw new HttpError(404, 'Not Found', 'GetById not possible');
     return result;
   }
 
@@ -31,13 +31,17 @@ export class UserMongoRepo implements Repository<User> {
   async update(id: string, updatedItem: Partial<User>): Promise<User> {
     const result = await UserModel.findByIdAndUpdate(id, updatedItem, {
       new: true,
-    }).exec();
+    })
+      .populate('recipes')
+      .exec();
     if (!result) throw new HttpError(404, 'Not Found', 'Update not possible');
     return result;
   }
 
   async login(loginUser: LoginUser): Promise<User> {
-    const result = await UserModel.findOne({ email: loginUser.email }).exec();
+    const result = await UserModel.findOne({ email: loginUser.email })
+      .populate('recipes')
+      .exec();
     if (!result || !(await Auth.compare(loginUser.passwd, result.passwd)))
       throw new HttpError(401, 'Unauthorized');
     return result;

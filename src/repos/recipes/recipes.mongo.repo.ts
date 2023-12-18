@@ -16,7 +16,7 @@ export class RecipesMongoRepo implements Repository<Recipe> {
   }
 
   async getAll(): Promise<Recipe[]> {
-    const result = await recipeModel.find().exec();
+    const result = await recipeModel.find().populate('author').exec();
     if (!result)
       throw new HttpError(404, 'Not Found', 'getAll method not possible');
     return result;

@@ -6,7 +6,7 @@ export type Recipe = {
   recipeName: string;
   description: string;
   ingredients: string;
-  category: 'Mis recetas' | 'Galletas' | 'Tortas';
+  category: 'Galletas' | 'Tortas';
   img: ImgData;
   author: User;
 };
