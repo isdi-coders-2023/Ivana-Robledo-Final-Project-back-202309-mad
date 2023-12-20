@@ -18,7 +18,7 @@ const usersSchema = new Schema<User>({
   recipes: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'recipe',
+      ref: 'Recipe',
     },
   ],
 });

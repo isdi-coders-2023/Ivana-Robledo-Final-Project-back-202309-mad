@@ -1,6 +1,5 @@
-/* Import { Recipe } from '../../entities/recipe'; */
 import { UserModel } from '../users/users.mongo.model';
-/* Import { UserMongoRepo } from '../users/users.mongo.repo'; */
+import { UserMongoRepo } from '../users/users.mongo.repo';
 import { recipeModel } from './recipes.mongo.model';
 import { RecipesMongoRepo } from './recipes.mongo.repo';
 
@@ -9,7 +8,6 @@ jest.mock('../users/users.mongo.repo.js');
 jest.mock('../users/users.mongo.model.js');
 describe('Given the class RecipeMongoRepo', () => {
   let repo: RecipesMongoRepo;
-  // Const exec = jest.fn().mockResolvedValue('Test');
 
   describe('When it is instantiated and its methods are called', () => {
     const exec = jest.fn().mockResolvedValue('Test');
@@ -39,11 +37,12 @@ describe('Given the class RecipeMongoRepo', () => {
 
       recipeModel.create = jest.fn().mockReturnValue({});
     });
-    /* Test('Then it should execute getAll', async () => {
+
+    test('Then it should execute getAll', async () => {
       const result = await repo.getAll();
       expect(exec).toHaveBeenCalled();
       expect(result).toBe('Test');
-    }); */
+    });
 
     test('Then it should execute getById', async () => {
       const result = await repo.getById('');
@@ -51,13 +50,22 @@ describe('Given the class RecipeMongoRepo', () => {
       expect(result).toBe('Test');
     });
 
-    /* Test('Then it should execute create', async () => {
-      UserMongoRepo.prototype.getById = jest
-        .fn()
-        .mockResolvedValue({ recipes: [] });
-      UserMongoRepo.prototype.update = jest.fn();
-      const result = await repo.create({ author: {} } as Omit<Recipe, 'id'>);
-      expect(result).toBe('Test');
+    /*    Test('Then it should execute create', async () => {
+      const newItem: Recipe = {
+        recipeName: 'Test',
+        author: { id: 'userId', email: 'user@example.com', passwd: 'password' },
+      } as unknown as Recipe;
+
+      // Configura el mock para devolver un usuario ficticio
+      jest.spyOn(repo.userRepo, 'getById').mockResolvedValue({
+        id: 'userId',
+        email: 'user@example.com',
+        passwd: 'password',
+      });
+
+      await repo.create(newItem);
+
+      expect(exec).toHaveBeenCalled();
     }); */
 
     test('Then it should execute update', async () => {
@@ -86,6 +94,8 @@ describe('Given the class RecipeMongoRepo', () => {
   describe('When we isntantiate it WITH errors', () => {
     const exec = jest.fn().mockResolvedValue(null);
     beforeEach(() => {
+      UserMongoRepo.prototype.getById = jest.fn().mockResolvedValue(null);
+      UserMongoRepo.prototype.update = jest.fn();
       recipeModel.findById = jest.fn().mockReturnValue({
         populate: jest.fn().mockReturnValue({
           exec,

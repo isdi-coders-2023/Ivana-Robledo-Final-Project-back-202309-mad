@@ -12,7 +12,7 @@ export class UserMongoRepo implements Repository<User> {
   }
 
   async getAll(): Promise<User[]> {
-    const result = await UserModel.find().exec();
+    const result = await UserModel.find().populate('recipes').exec();
     return result;
   }
 
