@@ -7,27 +7,21 @@ jest.mock('bcrypt');
 describe('Given Auth abstract class', () => {
   describe('When using its methods', () => {
     test('Then hash should...', () => {
-      // Arrange
       (hash as jest.Mock).mockReturnValue('test');
       const mockValue = '';
 
-      // Act
       const result = Auth.hash(mockValue);
 
-      // Assert
       expect(hash).toHaveBeenCalled();
       expect(result).toBe('test');
     });
 
     test('Then comparison should...', () => {
-      // Arrange
       (compare as jest.Mock).mockReturnValue(true);
       const mockValue = '';
 
-      // Act
       const result = Auth.compare(mockValue, mockValue);
 
-      // Assert
       expect(compare).toHaveBeenCalled();
       expect(result).toBe(true);
     });
