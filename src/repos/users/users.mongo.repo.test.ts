@@ -58,6 +58,14 @@ describe('Given UsersMongoRepo', () => {
     });
   });
 
+  test('Then it should execute update', async () => {
+    const exec = jest.fn().mockResolvedValue('Test'); // Mock the resolved value to 'Test'
+    repo.update = exec;
+    const result = await repo.update('1', { id: '2' });
+    expect(exec).toHaveBeenCalled();
+    expect(result).toBe('Test');
+  });
+
   describe('When we instantiate it WITH errors', () => {
     const exec = jest.fn().mockResolvedValue(null);
     beforeEach(() => {
