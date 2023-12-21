@@ -20,9 +20,6 @@ describe('Given RecipesController Class...', () => {
       status: jest.fn(),
     } as unknown as Response;
     mockNext = jest.fn();
-  });
-
-  beforeEach(() => {
     mockRepo = {
       create: jest.fn().mockResolvedValue({}),
       getById: jest.fn().mockResolvedValue({}),
@@ -33,8 +30,8 @@ describe('Given RecipesController Class...', () => {
     controller = new RecipeController(mockRepo);
   });
 
-  describe('When we create a new recipe', () => {
-    test('Then the create method should create a new recipe with the proper info and the right image...', async () => {
+  describe('When we create a new recipe without errors', () => {
+    test('Then the create method should create a new recipe with its info and the right image...', async () => {
       const mockRequest = {
         file: {
           path: 'valid/path/to/image.jpg',
@@ -43,7 +40,6 @@ describe('Given RecipesController Class...', () => {
         params: { id: 'test' },
       } as unknown as Request;
 
-      const mockNext = jest.fn();
       const mockRepo = {
         create: jest.fn(),
         delete: jest.fn(),

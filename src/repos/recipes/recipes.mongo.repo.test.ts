@@ -50,24 +50,6 @@ describe('Given the class RecipeMongoRepo', () => {
       expect(result).toBe('Test');
     });
 
-    /*    Test('Then it should execute create', async () => {
-      const newItem: Recipe = {
-        recipeName: 'Test',
-        author: { id: 'userId', email: 'user@example.com', passwd: 'password' },
-      } as unknown as Recipe;
-
-      // Configura el mock para devolver un usuario ficticio
-      jest.spyOn(repo.userRepo, 'getById').mockResolvedValue({
-        id: 'userId',
-        email: 'user@example.com',
-        passwd: 'password',
-      });
-
-      await repo.create(newItem);
-
-      expect(exec).toHaveBeenCalled();
-    }); */
-
     test('Then it should execute update', async () => {
       const result = await repo.update('', { recipeName: 'cookies' });
       expect(exec).toHaveBeenCalled();
